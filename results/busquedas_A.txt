@@ -1,0 +1,5 @@
+k = 72 -> 5248-YGIJN tenure: 72
+k = 60 -> 5248-YGIJN tenure: 72
+k = 45 -> 5248-YGIJN tenure: 72
+k = 30 -> 5248-YGIJN tenure: 72
+k = 12 -> 5248-YGIJN tenure: 72
