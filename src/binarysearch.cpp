@@ -8,42 +8,25 @@ int busquedaBinariaRecursiva(
     int derecha,
     int k
 ) {
-
-    // Caso base
+    // Caso base: rango inválido
     if (izquierda > derecha) {
-
         return -1;
     }
 
-    int medio =
-        izquierda + (derecha - izquierda) / 2;
+    int medio = izquierda + (derecha - izquierda) / 2;
 
-    // Si cumple la condicion
-    if (arr[medio].tenure >= k) {
-
-        // Verificar si es el PRIMERO
-        if (
-            medio == 0 ||
-            arr[medio - 1].tenure < k
-        ) {
-
-            return medio;
-        }
-
-        // Buscar más a la izquierda
-        return busquedaBinariaRecursiva(
-            arr,
-            izquierda,
-            medio - 1,
-            k
-        );
+    // Orden descendente por tenure.
+    if (arr[medio].tenure == k) {
+        // Encontramos una aparición y retornamos cualquiera
+        return medio;
     }
 
-    // Como es descendente, si no cumple debemos ir a la izquierda
-    return busquedaBinariaRecursiva(
-        arr,
-        izquierda,
-        medio - 1,
-        k
-    );
+    // Si el valor en medio es mayor que k, entonces k (si existe)
+    // estará en la derecha porque el arreglo es descendente.
+    if (arr[medio].tenure > k) {
+        return busquedaBinariaRecursiva(arr, medio + 1, derecha, k);
+    }
+
+    // Si arr[medio].tenure < k, buscar a la izquierda.
+    return busquedaBinariaRecursiva(arr, izquierda, medio - 1, k);
 }

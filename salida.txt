@@ -1,0 +1,37 @@
+Registros cargados: 7043
+Registros nulos: 11
+
+Primeros 10 registros ordenados:
+5248-YGIJN 72
+6234-RAAPL 72
+5954-BDFSG 72
+0526-SXDJP 72
+9848-JQJTX 72
+6728-DKUCO 72
+2848-YXSMW 72
+6734-PSBAW 72
+3146-MSEGF 72
+5997-OPVFA 72
+
+Resultados de búsquedas:
+k = 72 -> 6904-JLBGY tenure: 72
+k = 60 -> 7426-WEIJX tenure: 60
+k = 45 -> 7925-PNRGI tenure: 45
+k = 30 -> 2684-EIWEO tenure: 30
+k = 12 -> 7450-NWRTR tenure: 12
+
+MEDICION DE TIEMPOS
+
+Tamano: 1000
+MergeSort: 128084 nanosegundos
+Busqueda binaria: 42 nanosegundos
+
+Tamano: 3500
+MergeSort: 434750 nanosegundos
+Busqueda binaria: 42 nanosegundos
+
+Tamano: 7043
+MergeSort: 1235375 nanosegundos
+Busqueda binaria: 84 nanosegundos
+
+Archivos generados correctamente.

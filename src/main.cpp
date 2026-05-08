@@ -75,24 +75,23 @@ int main() {
                 k
             );
 
-        if (indice != -1) {
+        string resultado;
 
-            string resultado =
+        if (indice != -1) {
+            resultado =
                 "k = " +
                 to_string(k) +
                 " -> " +
                 solicitudes[indice].customerID +
                 " tenure: " +
-                to_string(
-                    solicitudes[indice].tenure
-                );
-
-            resultadosBusquedas.push_back(
-                resultado
-            );
-
-            cout << resultado << endl;
+                to_string(solicitudes[indice].tenure);
         }
+        else {
+            resultado = "k = " + to_string(k) + " -> no encontrado";
+        }
+
+        resultadosBusquedas.push_back(resultado);
+        cout << resultado << endl;
     }
 
     guardarBusquedas(
@@ -151,7 +150,7 @@ int main() {
             >(finBusqueda - inicioBusqueda);
 
         cout
-            << "\nTamano: "
+            << "\nTamaño: "
             << n
             << endl;
 

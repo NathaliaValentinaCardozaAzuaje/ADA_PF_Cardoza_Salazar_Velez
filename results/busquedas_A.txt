@@ -1,5 +1,5 @@
-k = 72 -> 5248-YGIJN tenure: 72
-k = 60 -> 5248-YGIJN tenure: 72
-k = 45 -> 5248-YGIJN tenure: 72
-k = 30 -> 5248-YGIJN tenure: 72
-k = 12 -> 5248-YGIJN tenure: 72
+k = 72 -> 6904-JLBGY tenure: 72
+k = 60 -> 7426-WEIJX tenure: 60
+k = 45 -> 7925-PNRGI tenure: 45
+k = 30 -> 2684-EIWEO tenure: 30
+k = 12 -> 7450-NWRTR tenure: 12
