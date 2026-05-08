@@ -2,12 +2,8 @@
 
 using namespace std;
 
-void merge(
-    vector<Solicitud>& arr,
-    int izquierda,
-    int medio,
-    int derecha
-) {
+void merge(vector<Solicitud>& arr, int izquierda, int medio, int derecha) 
+{
     int n1 = medio - izquierda + 1;
     int n2 = derecha - medio;
 
@@ -51,11 +47,8 @@ void merge(
     }
 }
 
-void mergeSort(
-    vector<Solicitud>& arr,
-    int izquierda,
-    int derecha
-) {
+void mergeSort(vector<Solicitud>& arr, int izquierda, int derecha) 
+{
 
     if (izquierda >= derecha) {
         return;

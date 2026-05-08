@@ -11,11 +11,9 @@
 
 using namespace std;
 
-void guardarCSVOrdenado(const vector<Solicitud> &solicitudes,
-                        const string &nombreArchivo);
+void guardarCSVOrdenado(const vector<Solicitud> &solicitudes, const string &nombreArchivo);
 
-void guardarBusquedas(const vector<string> &resultados,
-                      const string &nombreArchivo);
+void guardarBusquedas(const vector<string> &resultados, const string &nombreArchivo);
 
 int main() {
   int registrosNulos = 0;
@@ -28,7 +26,6 @@ int main() {
   }
 
   cout << "Registros cargados: " << solicitudes.size() << endl;
-
   cout << "Registros nulos: " << registrosNulos << endl;
 
   mergeSort(solicitudes, 0, solicitudes.size() - 1);
@@ -36,14 +33,12 @@ int main() {
   cout << "\nPrimeros 10 registros ordenados:\n";
 
   for (int i = 0; i < 10; i++) {
-
     cout << solicitudes[i].customerID << " " << solicitudes[i].tenure << endl;
   }
 
   guardarCSVOrdenado(solicitudes, "results/solicitudes_ordenadas.csv");
 
   vector<int> consultas = {72, 60, 45, 30, 12};
-
   vector<string> resultadosBusquedas;
 
   cout << "\nResultados de búsquedas:\n";
@@ -55,12 +50,8 @@ int main() {
 
     if (indice != -1) {
 
-      string resultado = "k = " + to_string(k) + " -> " +
-                         solicitudes[indice].customerID +
-                         " tenure: " + to_string(solicitudes[indice].tenure);
-
+      string resultado = "k = " + to_string(k) + " -> " + solicitudes[indice].customerID + " tenure: " + to_string(solicitudes[indice].tenure);
       resultadosBusquedas.push_back(resultado);
-
       cout << resultado << endl;
     }
   }
@@ -81,8 +72,7 @@ int main() {
 
     auto finMerge = chrono::high_resolution_clock::now();
 
-    auto tiempoMerge =
-        chrono::duration_cast<chrono::nanoseconds>(finMerge - inicioMerge);
+    auto tiempoMerge = chrono::duration_cast<chrono::nanoseconds>(finMerge - inicioMerge);
 
     auto inicioBusqueda = chrono::high_resolution_clock::now();
 
@@ -90,15 +80,13 @@ int main() {
 
     auto finBusqueda = chrono::high_resolution_clock::now();
 
-    auto tiempoBusqueda = chrono::duration_cast<chrono::nanoseconds>(
-        finBusqueda - inicioBusqueda);
+    auto tiempoBusqueda = chrono::duration_cast<chrono::nanoseconds>(finBusqueda - inicioBusqueda);
 
     cout << "\nTamano: " << n << endl;
 
     cout << "MergeSort: " << tiempoMerge.count() << " nanosegundos" << endl;
 
-    cout << "Busqueda binaria: " << tiempoBusqueda.count() << " nanosegundos"
-         << endl;
+    cout << "Busqueda binaria: " << tiempoBusqueda.count() << " nanosegundos" << endl;
   }
 
   cout << "\nArchivos generados correctamente.\n";
@@ -106,27 +94,27 @@ int main() {
   return 0;
 }
 
-void guardarCSVOrdenado(const vector<Solicitud> &solicitudes,
-                        const string &nombreArchivo) {
+void guardarCSVOrdenado(const vector<Solicitud> &solicitudes, const string &nombreArchivo) 
+{
   ofstream archivo(nombreArchivo);
+  
   if (!archivo.is_open()) {
     cerr << "Error creando archivo CSV\n";
     return;
   }
 
-  archivo << "customerID,tenure,MonthlyCharges,"
-          << "TotalCharges,Churn\n";
+  archivo << "customerID,tenure,MonthlyCharges," << "TotalCharges,Churn\n";
 
   for (const Solicitud &s : solicitudes) {
-    archivo << s.customerID << "," << s.tenure << "," << s.monthlyCharges << ","
-            << s.totalCharges << "," << s.churn << "\n";
+    archivo << s.customerID << "," << s.tenure << "," << s.monthlyCharges << "," << s.totalCharges << "," << s.churn << "\n";
   }
   archivo.close();
 }
 
-void guardarBusquedas(const vector<string> &resultados,
-                      const string &nombreArchivo) {
+void guardarBusquedas(const vector<string> &resultados, const string &nombreArchivo) 
+{
   ofstream archivo(nombreArchivo);
+  
   if (!archivo.is_open()) {
     cerr << "Error creando archivo de búsquedas\n";
     return;

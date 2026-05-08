@@ -5,9 +5,8 @@
 #include <string>
 #include "solicitud.hpp"
 
-std::vector<Solicitud> cargarCSV(
-    const std::string& nombreArchivo,
-    int& registrosNulos
-);
+using namespace std;
+
+vector<Solicitud> cargarCSV(const string& nombreArchivo, int& registrosNulos);
 
 #endif
