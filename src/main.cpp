@@ -5,7 +5,7 @@
 
 #include "parser.hpp"
 #include "mergesort.hpp"
-#include "binarysearch.hpp"
+#include "binary_search.hpp"
 #include "output.hpp"
 
 using namespace std;
