@@ -1,0 +1,33 @@
+MODULO B - RED DE MINIMO COSTO
+
+Numero de nodos: 20
+Numero de aristas: 190
+Costo promedio de arista: 129.02
+
+MST POR KRUSKAL
+Cantidad de aristas en MST: 19
+Peso total del MST: 2388
+
+Aristas incluidas en el MST:
+1 - 12 : 122
+12 - 16 : 123
+0 - 1 : 124
+1 - 9 : 124
+1 - 14 : 124
+1 - 19 : 125
+12 - 13 : 125
+1 - 11 : 125
+1 - 7 : 125
+1 - 3 : 126
+1 - 18 : 126
+1 - 17 : 126
+1 - 10 : 126
+4 - 12 : 127
+2 - 12 : 127
+1 - 8 : 127
+1 - 5 : 127
+6 - 12 : 129
+1 - 15 : 130
+
+Propiedad de eleccion codiciosa:
+Kruskal selecciona en cada paso la arista de menor peso que no forma ciclo. Union-Find permite verificar si los dos nodos de una arista ya pertenecen al mismo componente. Si ya estan conectados, agregar la arista produciria un ciclo, por lo tanto se descarta. Si no estan conectados, la arista se agrega al MST y se unen ambos componentes.
