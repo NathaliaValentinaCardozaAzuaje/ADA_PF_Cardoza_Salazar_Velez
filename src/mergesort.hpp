@@ -7,10 +7,6 @@
 
 using namespace std;
 
-void mergeSort(
-    vector<Solicitud>& arr,
-    int izquierda,
-    int derecha
-);
+void mergeSort(vector<Solicitud>& arr, int izquierda, int derecha);
 
 #endif

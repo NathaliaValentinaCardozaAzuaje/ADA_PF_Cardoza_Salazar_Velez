@@ -27,10 +27,12 @@ vector<Solicitud> cargarCSV(
     vector<Solicitud> solicitudes;
     ifstream archivo(nombreArchivo);
 
+    // Control de Error en caso de que haya un error al abrir el archivo
     if (!archivo.is_open()) {
         cerr << "Error abriendo CSV\n";
         return solicitudes;
     }
+
     string linea;
     getline(archivo, linea);
 
@@ -41,6 +43,7 @@ vector<Solicitud> cargarCSV(
         while (getline(ss, campo, ',')) {
             columnas.push_back(campo);
         }
+        
         Solicitud s;
 
         s.customerID = columnas[0];
