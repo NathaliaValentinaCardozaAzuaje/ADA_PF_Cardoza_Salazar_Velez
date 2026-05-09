@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -7,6 +8,7 @@
 #include "mergesort.hpp"
 #include "binarysearch.hpp"
 #include "output.hpp"
+#include "knapsack.hpp"
 
 using namespace std;
 
@@ -15,8 +17,7 @@ int main() {
     vector<Solicitud> solicitudes =
         cargarCSV(
             "data/WA_Fn-UseC_-Telco-Customer-Churn.csv",
-            registrosNulos
-        );
+            registrosNulos );
     
     if (solicitudes.empty()) {
         cerr << "No se cargaron datos.\n";
@@ -165,6 +166,47 @@ int main() {
             << tiempoBusqueda.count()
             << " nanosegundos"
             << endl;
+    }
+
+    // --- MODULO C: dos ejecuciones W=500 y W=5000 ---
+    auto itemsMochila = construirItemsMochila(solicitudes);
+
+    // Ejecucion 1: W = 500
+    {
+        const int W = 500;
+        vector<int> indicesSeleccionados;
+        int valorOptimo = resolverMochila(itemsMochila, W, indicesSeleccionados);
+        ContraejemploCodicioso contraejemplo =
+            encontrarContraejemploCodicioso(itemsMochila, W, valorOptimo);
+        escribirReporteMochila(
+            itemsMochila,
+            indicesSeleccionados,
+            valorOptimo,
+            W,
+            contraejemplo,
+            "results/asignacion_bw_500.txt"
+        );
+        cout << "\n[Modulo C] W=500: valor optimo = " << valorOptimo
+             << ", items seleccionados = " << indicesSeleccionados.size() << "\n";
+    }
+
+    // Ejecucion 2: W = 5000
+    {
+        const int W = 5000;
+        vector<int> indicesSeleccionados;
+        int valorOptimo = resolverMochila(itemsMochila, W, indicesSeleccionados);
+        ContraejemploCodicioso contraejemplo =
+            encontrarContraejemploCodicioso(itemsMochila, W, valorOptimo);
+        escribirReporteMochila(
+            itemsMochila,
+            indicesSeleccionados,
+            valorOptimo,
+            W,
+            contraejemplo,
+            "results/asignacion_bw_5000.txt"
+        );
+        cout << "[Modulo C] W=5000: valor optimo = " << valorOptimo
+             << ", items seleccionados = " << indicesSeleccionados.size() << "\n";
     }
 
     cout << "\nArchivos generados correctamente.\n";
