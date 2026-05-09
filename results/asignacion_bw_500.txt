@@ -8,9 +8,7 @@ Valor optimo total: 0 centavos
 Numero de solicitudes seleccionadas: 0
 Peso total utilizado: 0 / 500
 
-Solicitudes seleccionadas:
-  i  CustomerID        Peso   Valor
-  -  ----------        ----   -----
+No se selecciono ninguna solicitud.
 
 --- CONTRAEJEMPLO CODICIOSO ---
 El greedy por ratio v/w selecciona exactamente 3 solicitudes del

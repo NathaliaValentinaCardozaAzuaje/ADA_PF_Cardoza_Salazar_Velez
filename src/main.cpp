@@ -12,6 +12,11 @@
 
 using namespace std;
 
+// Punto de entrada del programa.
+// Flujo general:
+// 1) Carga y ordena solicitudes por tenure.
+// 2) Ejecuta busquedas binarias y mediciones de tiempo.
+// 3) Ejecuta el modulo C (mochila) para W=500 y W=5000 y escribe reportes.
 int main() {
     int registrosNulos = 0;
     vector<Solicitud> solicitudes =
@@ -64,7 +69,7 @@ int main() {
 
     vector<string> resultadosBusquedas;
 
-    cout << "\nResultados de búsquedas:\n";
+    cout << "\nResultados de busquedas:\n";
 
     for (int k : consultas) {
 
@@ -107,6 +112,9 @@ int main() {
         3500,
         7043
     };
+    const int repeticionesBusqueda = 1000000;
+    volatile int acumuladorBusqueda = 0;
+    vector<int> clavesMedicionBusqueda = {72, 60, 45, 30, 12};
 
     for (int n : tamanos) {
 
@@ -128,44 +136,56 @@ int main() {
             chrono::high_resolution_clock::now();
 
         auto tiempoMerge =
-            chrono::duration_cast<
-                chrono::nanoseconds
-            >(finMerge - inicioMerge);
+            chrono::duration<double, micro>(finMerge - inicioMerge);
 
         auto inicioBusqueda =
             chrono::high_resolution_clock::now();
 
-        busquedaBinariaRecursiva(
+        for (int r = 0; r < repeticionesBusqueda; ++r) {
+            int clave = clavesMedicionBusqueda[r % clavesMedicionBusqueda.size()];
+            acumuladorBusqueda += busquedaBinariaRecursiva(
                 subset,
                 0,
                 subset.size() - 1,
-                45
+                clave
             );
+        }
 
         auto finBusqueda =
             chrono::high_resolution_clock::now();
 
-        auto tiempoBusqueda =
+        auto tiempoBusquedaTotal =
             chrono::duration_cast<
-                chrono::nanoseconds
+                chrono::microseconds
             >(finBusqueda - inicioBusqueda);
+        double tiempoBusquedaPromedio =
+            static_cast<double>(tiempoBusquedaTotal.count()) / repeticionesBusqueda;
 
         cout
-            << "\nTamaño: "
+            << "\nTamano: "
             << n
             << endl;
 
         cout
             << "MergeSort: "
+            << fixed << setprecision(0)
             << tiempoMerge.count()
-            << " nanosegundos"
+            << " microsegundos"
             << endl;
 
         cout
             << "Busqueda binaria: "
-            << tiempoBusqueda.count()
-            << " nanosegundos"
+            << fixed << setprecision(4)
+            << tiempoBusquedaPromedio
+            << " microsegundos (promedio de "
+            << repeticionesBusqueda
+            << " ejecuciones)"
             << endl;
+    }
+
+    // Evita que el compilador elimine la medicion por optimizacion agresiva.
+    if (acumuladorBusqueda == -1) {
+        cout << "";
     }
 
     // --- MODULO C: dos ejecuciones W=500 y W=5000 ---

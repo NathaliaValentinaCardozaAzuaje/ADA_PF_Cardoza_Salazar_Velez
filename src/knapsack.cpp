@@ -11,22 +11,23 @@ using namespace std;
 
 namespace {
 
+// Suma los pesos de un conjunto de indices.
 int sumarPesos(const vector<ItemMochila>& items, const vector<int>& indices) {
     int total = 0;
     for (int idx : indices) total += items[idx].peso;
     return total;
 }
 
+// Suma los valores de un conjunto de indices.
 int sumarValores(const vector<ItemMochila>& items, const vector<int>& indices) {
     int total = 0;
     for (int idx : indices) total += items[idx].valor;
     return total;
 }
 
-} // namespace
+}
 
-// ---------------------------------------------------------------------------
-
+// Construye hasta 50 items desde solicitudes con churn = "No".
 vector<ItemMochila> construirItemsMochila(
     const vector<Solicitud>& solicitudesOrdenadas
 ) {
@@ -46,8 +47,7 @@ vector<ItemMochila> construirItemsMochila(
     return items;
 }
 
-// ---------------------------------------------------------------------------
-
+// Resuelve mochila 0-1 con Programacion Dinamica.
 int resolverMochila(
     const vector<ItemMochila>& items,
     int W,
@@ -66,11 +66,11 @@ int resolverMochila(
         }
     }
 
-    // Backtracking
+    // Reconstruccion de la solucion optima desde la tabla DP.
     indicesSeleccionados.clear();
     int w = W;
     for (int i = n; i >= 1; --i) {
-        if (items[i-1].peso <= w && dp[i][w] != dp[i-1][w]) {
+        if (items[i - 1].peso <= w && dp[i][w] != dp[i - 1][w]) {
             indicesSeleccionados.push_back(i - 1);
             w -= items[i - 1].peso;
         }
@@ -79,16 +79,9 @@ int resolverMochila(
     return dp[n][W];
 }
 
-// ---------------------------------------------------------------------------
-// Busca exactamente 3 items del conjunto de 50 que:
-//   1. Sean seleccionados por el greedy (ordenados por ratio v/w, tomando
-//      los que quepan dentro de W hasta completar 3).
-//   2. Su valor combinado sea estrictamente menor al valorOptimoPD.
-//
-// Estrategia: iterar sobre trios (i,j,k) del conjunto. Para cada trio,
-// simular el greedy (ordenar por ratio, tomar todos los que quepan en W).
-// Si el greedy selecciona exactamente 3 y su valor < valorOptimoPD → contraejemplo.
-// ---------------------------------------------------------------------------
+// Busca el mejor contraejemplo codicioso con exactamente 3 items.
+// Recorre todos los trios posibles, aplica greedy por ratio v/w y conserva
+// el trio con mayor valor codicioso que siga siendo menor al optimo de PD.
 ContraejemploCodicioso encontrarContraejemploCodicioso(
     const vector<ItemMochila>& items,
     int W,
@@ -101,24 +94,20 @@ ContraejemploCodicioso encontrarContraejemploCodicioso(
 
     const int n = static_cast<int>(items.size());
 
-    // Para cada trio de items del conjunto de 50
     for (int i = 0; i < n - 2; ++i) {
         for (int j = i + 1; j < n - 1; ++j) {
             for (int k = j + 1; k < n; ++k) {
-                // Los 3 indices del trio en orden
                 int trio[3] = {i, j, k};
 
-                // Simular greedy por ratio sobre este trio
-                // Ordenar el trio por ratio descendente
+                // Orden descendente por ratio para simular el codicioso.
                 sort(trio, trio + 3, [&](int a, int b) {
                     double ra = (items[a].peso > 0)
-                        ? (double)items[a].valor / items[a].peso : 0.0;
+                        ? static_cast<double>(items[a].valor) / items[a].peso : 0.0;
                     double rb = (items[b].peso > 0)
-                        ? (double)items[b].valor / items[b].peso : 0.0;
+                        ? static_cast<double>(items[b].valor) / items[b].peso : 0.0;
                     return ra > rb;
                 });
 
-                // Greedy: tomar los que quepan dentro de W
                 vector<int> seleccionados;
                 int restante = W;
                 for (int t = 0; t < 3; ++t) {
@@ -128,17 +117,13 @@ ContraejemploCodicioso encontrarContraejemploCodicioso(
                     }
                 }
 
-                // Necesitamos exactamente 3 items seleccionados
-                if ((int)seleccionados.size() != 3) continue;
+                if (static_cast<int>(seleccionados.size()) != 3) continue;
 
                 int valorG = sumarValores(items, seleccionados);
                 int pesoG  = sumarPesos(items, seleccionados);
 
-                // El valor del greedy debe ser menor al optimo de PD
                 if (valorG >= valorOptimoPD) continue;
 
-                // Conservar el mejor contraejemplo: mayor valor greedy,
-                // pero siempre estrictamente menor al optimo de PD.
                 if (!resultado.encontrado || valorG > resultado.valorGreedy) {
                     resultado.encontrado    = true;
                     resultado.indicesGreedy = seleccionados;
@@ -152,8 +137,7 @@ ContraejemploCodicioso encontrarContraejemploCodicioso(
     return resultado;
 }
 
-// ---------------------------------------------------------------------------
-
+// Escribe el reporte del modulo C en archivo de texto.
 void escribirReporteMochila(
     const vector<ItemMochila>& items,
     const vector<int>& seleccionados,
@@ -165,31 +149,31 @@ void escribirReporteMochila(
     ofstream out(rutaSalida, ios::out | ios::trunc);
     if (!out) return;
 
-    // --- Encabezado ---
     out << "=== MODULO C: ASIGNACION DE ANCHO DE BANDA ===\n\n";
     out << "Capacidad total W = " << W << "\n";
     out << "Numero de solicitudes candidatas (Churn=No, top 50 por tenure): "
         << items.size() << "\n\n";
 
-    // --- Solucion optima (PD, 50 items) ---
     out << "--- SOLUCION OPTIMA (Mochila 0-1) ---\n";
     out << "Valor optimo total: " << valorOptimo << " centavos\n";
     out << "Numero de solicitudes seleccionadas: " << seleccionados.size() << "\n";
     out << "Peso total utilizado: " << sumarPesos(items, seleccionados)
         << " / " << W << "\n\n";
-
-    out << "Solicitudes seleccionadas:\n";
-    out << "  i  CustomerID        Peso   Valor\n";
-    out << "  -  ----------        ----   -----\n";
-    for (size_t i = 0; i < seleccionados.size(); ++i) {
-        const ItemMochila& item = items[seleccionados[i]];
-        out << setw(3) << (i + 1) << "  "
-            << setw(14) << item.idCliente << "  "
-            << setw(4) << item.peso << "   "
-            << setw(5) << item.valor << "\n";
+    
+    if (seleccionados.empty()) {
+        out << "No se selecciono ninguna solicitud.\n";
+    } else {
+        out << "Solicitudes seleccionadas:\n";
+        out << "  i  CustomerID  Peso  Valor\n";
+        out << "  -  ----------  ----  -----\n";
+        for (size_t i = 0; i < seleccionados.size(); ++i) {
+            const ItemMochila& item = items[seleccionados[i]];
+            out << setw(3) << (i + 1) << "  "
+                << setw(10) << item.idCliente << "  "
+                << setw(3) << item.peso << "  "
+                << setw(0) << item.valor << "\n";
+        }
     }
-
-    // --- Contraejemplo codicioso ---
     out << "\n--- CONTRAEJEMPLO CODICIOSO ---\n";
     out << "El greedy por ratio v/w selecciona exactamente 3 solicitudes del\n";
     out << "conjunto de 50 que caben dentro de W = " << W << ", pero su valor\n";
@@ -198,31 +182,28 @@ void escribirReporteMochila(
     if (!ce.encontrado) {
         out << "No se encontro contraejemplo de 3 items con valor < " << valorOptimo << ".\n";
     } else {
-        // Tabla de los 3 items seleccionados por el greedy
         out << "Items seleccionados por el Codicioso (ratio v/w):\n";
-        out << "  #   CustomerID      Peso    Valor    Ratio v/w\n";
-        out << "  -   ----------      ----    -----    ---------\n";
+        out << "  #   CustomerID    Peso    Valor    Ratio v/w\n";
+        out << "  -   ----------    ----    -----    ---------\n";
         out << fixed << setprecision(4);
         for (size_t pos = 0; pos < ce.indicesGreedy.size(); ++pos) {
             const ItemMochila& item = items[ce.indicesGreedy[pos]];
             double ratio = (item.peso > 0)
                 ? static_cast<double>(item.valor) / item.peso : 0.0;
             out << setw(3) << (pos + 1) << "   "
-                << setw(12) << item.idCliente << "    "
-                << setw(4) << item.peso << "    "
+                << setw(10) << item.idCliente << "    "
+                << setw(2) << item.peso << "  "
                 << setw(5) << item.valor << "    "
-                << setw(9) << ratio << "\n";
+                << setw(8) << ratio << "\n";
         }
         out << "  Peso total: " << ce.pesoGreedy << " / " << W << "\n\n";
 
-        // Tabla comparativa
-        // Construir string PD: customerIDs del optimo
         ostringstream pdStr;
         for (size_t i = 0; i < seleccionados.size(); ++i) {
             if (i > 0) pdStr << ", ";
             pdStr << items[seleccionados[i]].idCliente;
         }
-        // Construir string Greedy: customerIDs de los 3
+
         ostringstream greedyStr;
         for (size_t i = 0; i < ce.indicesGreedy.size(); ++i) {
             if (i > 0) greedyStr << ", ";
@@ -233,14 +214,13 @@ void escribirReporteMochila(
         out << "--------------------  ------------------------------------   -----------   -------\n";
         out << left;
         out << "Codicioso (ratio)     " << setw(38) << greedyStr.str()
-            << right << setw(7) << ce.valorGreedy << "   No\n";
+            << right << setw(4) << ce.valorGreedy << setw(14) << "No\n";
         out << left;
         out << "PD (Mochila 0-1)      " << setw(38) << pdStr.str()
-            << right << setw(7) << valorOptimo    << "   Si\n";
+            << right << setw(4) << valorOptimo << setw(14) << "Si\n";
         out << left;
     }
 
-    // --- Analisis de complejidad ---
     const int n = static_cast<int>(items.size());
     out << "\n--- ANALISIS DE COMPLEJIDAD ---\n";
     out << "Tiempo:  Theta(n * W) = Theta(" << n << " * " << W
