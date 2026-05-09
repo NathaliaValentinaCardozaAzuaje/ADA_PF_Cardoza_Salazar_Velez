@@ -22,7 +22,8 @@ bool UnionFind::conectados(int a, int b) {
     return find(a) == find(b);
 }
 
-void UnionFind::unir(int a, int b) {
+void UnionFind::unir(int a, int b) 
+{
     int raizA = find(a);
     int raizB = find(b);
 
@@ -40,4 +41,36 @@ void UnionFind::unir(int a, int b) {
         padre[raizB] = raizA;
         rango[raizA]++;
     }
+}
+
+bool compararAristas(const Arista& a, const Arista& b) {
+    return a.peso < b.peso;
+}
+
+vector<Arista> kruskal(const Grafo& grafo, int& pesoTotal) {
+
+    vector<Arista> mst;
+    pesoTotal = 0;
+    vector<Arista> aristasOrdenadas = grafo.aristas;
+
+    sort(aristasOrdenadas.begin(), aristasOrdenadas.end(), compararAristas);
+
+    UnionFind uf(grafo.numNodos);
+
+    for (const Arista& arista : aristasOrdenadas) 
+    {
+
+        if (!uf.conectados(arista.origen, arista.destino)) 
+        {
+            uf.unir(arista.origen, arista.destino);
+            mst.push_back(arista);
+            pesoTotal += arista.peso;
+
+            if (mst.size() == grafo.numNodos - 1) 
+            {
+                break;
+            }
+        }
+    }
+    return mst;
 }
