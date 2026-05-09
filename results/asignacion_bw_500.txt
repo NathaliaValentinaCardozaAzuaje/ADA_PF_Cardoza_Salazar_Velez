@@ -1,0 +1,30 @@
+=== MODULO C: ASIGNACION DE ANCHO DE BANDA ===
+
+Capacidad total W = 500
+Numero de solicitudes candidatas (Churn=No, top 50 por tenure): 50
+
+--- SOLUCION OPTIMA (Mochila 0-1) ---
+Valor optimo total: 0 centavos
+Numero de solicitudes seleccionadas: 0
+Peso total utilizado: 0 / 500
+
+No se selecciono ninguna solicitud.
+
+--- CONTRAEJEMPLO CODICIOSO ---
+El greedy por ratio v/w selecciona exactamente 3 solicitudes del
+conjunto de 50 que caben dentro de W = 500, pero su valor
+total es menor al optimo encontrado por la Mochila 0-1.
+
+No se encontro contraejemplo de 3 items con valor < 0.
+
+--- ANALISIS DE COMPLEJIDAD ---
+Tiempo:  Theta(n * W) = Theta(50 * 500) = Theta(25000)
+Espacio: Theta(n * W) = Theta(25000) celdas en la tabla dp
+
+Discusion de pseudopolinomialidad:
+La complejidad Theta(n*W) es polinomial en los VALORES de n y W,
+pero W no esta acotado por el tamano del input en bits (log2(W)).
+Si W = 2^k, el algoritmo requiere 2^k columnas -> exponencial en k.
+Por esto se clasifica como pseudopolinomial, no polinomial estricto.
+El problema de la Mochila 0-1 es NP-completo; no se conoce algoritmo
+polinomial en sentido estricto.

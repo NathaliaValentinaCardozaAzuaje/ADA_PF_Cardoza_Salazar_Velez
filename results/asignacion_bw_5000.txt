@@ -1,0 +1,45 @@
+=== MODULO C: ASIGNACION DE ANCHO DE BANDA ===
+
+Capacidad total W = 5000
+Numero de solicitudes candidatas (Churn=No, top 50 por tenure): 50
+
+--- SOLUCION OPTIMA (Mochila 0-1) ---
+Valor optimo total: 707 centavos
+Numero de solicitudes seleccionadas: 2
+Peso total utilizado: 4851 / 5000
+
+Solicitudes seleccionadas:
+  i  CustomerID  Peso  Valor
+  -  ----------  ----  -----
+  1  9286-BHDQG  3140  453
+  2  4312-KFRXN  1711  254
+
+--- CONTRAEJEMPLO CODICIOSO ---
+El greedy por ratio v/w selecciona exactamente 3 solicitudes del
+conjunto de 50 que caben dentro de W = 5000, pero su valor
+total es menor al optimo encontrado por la Mochila 0-1.
+
+Items seleccionados por el Codicioso (ratio v/w):
+  #   CustomerID    Peso    Valor    Ratio v/w
+  -   ----------    ----    -----    ---------
+  1   4312-KFRXN    1711    254      0.1485
+  2   6734-PSBAW    1724    236      0.1369
+  3   7606-BPHHN    1469    198      0.1348
+  Peso total: 4904 / 5000
+
+Enfoque               Solicitudes seleccionadas              Valor Total   Optimo?
+--------------------  ------------------------------------   -----------   -------
+Codicioso (ratio)     4312-KFRXN, 6734-PSBAW, 7606-BPHHN     688           No
+PD (Mochila 0-1)      9286-BHDQG, 4312-KFRXN                 707           Si
+
+--- ANALISIS DE COMPLEJIDAD ---
+Tiempo:  Theta(n * W) = Theta(50 * 5000) = Theta(250000)
+Espacio: Theta(n * W) = Theta(250000) celdas en la tabla dp
+
+Discusion de pseudopolinomialidad:
+La complejidad Theta(n*W) es polinomial en los VALORES de n y W,
+pero W no esta acotado por el tamano del input en bits (log2(W)).
+Si W = 2^k, el algoritmo requiere 2^k columnas -> exponencial en k.
+Por esto se clasifica como pseudopolinomial, no polinomial estricto.
+El problema de la Mochila 0-1 es NP-completo; no se conoce algoritmo
+polinomial en sentido estricto.
