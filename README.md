@@ -38,13 +38,13 @@ ADA_PF_Cardoza_Salazar_Velez/
 ### Linux / macOS / WSL / Git Bash
 
 ```bash
-g++ -std=c++17 -O2 -o ada_pf src/main.cpp src/*.cpp
+g++ -std=c++17 -O2 -o ada_pf src/*.cpp
 ```
 
 ### Windows PowerShell (MinGW)
 
 ```powershell
-g++ -std=c++17 -O2 -o ada_pf.exe src/main.cpp src/*.cpp
+g++ -std=c++17 -O2 -o ada_pf.exe src/*.cpp
 ```
 
 ## Ejecucion
@@ -83,10 +83,11 @@ Al correr el ejecutable se generan estos archivos en `results/`:
 
 ## Nota importante de compilacion
 
-El proyecto esta preparado para compilar exactamente con el comando solicitado en la guia:
+No compiles con `src/main.cpp src/*.cpp` al mismo tiempo, porque `main.cpp` queda duplicado.
+Usa:
 
 ```bash
-g++ -std=c++17 -O2 -o ada_pf src/main.cpp src/*.cpp
+g++ -std=c++17 -O2 -o ada_pf src/*.cpp
 ```
 
 ## Ejecucion esperada
