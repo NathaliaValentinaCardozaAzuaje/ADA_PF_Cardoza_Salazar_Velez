@@ -1,0 +1,536 @@
+% ============================================================
+%  Informe Técnico — Práctica Final Integradora
+%  Análisis y Diseño de Algoritmos · Universidad EAFIT · 2026-1
+% ============================================================
+\documentclass[12pt, a4paper]{article}
+
+% ── Codificación e idioma ──────────────────────────────────
+\usepackage[spanish, es-noshorthands]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Geometría ─────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=2.5cm,
+  left=3cm, right=2.5cm,
+  headheight=14pt
+]{geometry}
+
+% ── Encabezado y pie ──────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Práctica Final Integradora — ADA 2026-1}}
+\fancyhead[R]{\small\textit{Universidad EAFIT}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Matemáticas ───────────────────────────────────────────
+\usepackage{amsmath, amssymb}
+
+% ── Tablas ────────────────────────────────────────────────
+\usepackage{booktabs, tabularx, array}
+\renewcommand{\arraystretch}{1.25}
+
+% ── Listas ────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{topsep=4pt, itemsep=2pt, parsep=0pt}
+
+% ── Código ────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=6pt,
+  breaklines=true,
+  captionpos=b,
+  xleftmargin=10pt,
+  aboveskip=6pt,
+  belowskip=6pt,
+  showstringspaces=false,
+}
+\usepackage{xcolor}
+
+% ── Captions e hipervínculos ──────────────────────────────
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf, skip=4pt}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=black]{hyperref}
+
+% ── Párrafos ──────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% ============================================================
+%  PORTADA
+% ============================================================
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+  \vspace*{1.5cm}
+  {\large\bfseries Universidad EAFIT}\\[4pt]
+  {\normalsize Departamento de Ciencias de la Computación}\\[2pt]
+  {\normalsize Análisis y Diseño de Algoritmos · 2026-1}
+
+  \vspace{2.5cm}
+  \rule{\linewidth}{0.6pt}\\[10pt]
+  {\LARGE\bfseries Práctica Final Integradora}\\[8pt]
+  {\large Informe Técnico}\\[10pt]
+  \rule{\linewidth}{0.6pt}
+
+  \vspace{1cm}
+  {\normalsize\itshape
+    Optimización de rutas y planificación de recursos\\
+    en redes de telecomunicaciones}
+
+  \vspace{2cm}
+  \begin{tabular}{rl}
+    \textbf{Integrante 1:} & Nathalia Valentina Cardoza Azuaje \\[4pt]
+    \textbf{Integrante 2:} & Andres Felipe Velez Alvarez \\[4pt]
+    \textbf{Integrante 3:} & Sebastian Salazar Henao
+  \end{tabular}
+
+  \vspace{1.5cm}
+  {\small Repositorio: \texttt{ADA\_PF\_Cardoza\_Salazar\_Velez}}\\[4pt]
+  {\small 8 de mayo de 2026}
+\end{center}
+
+\newpage
+
+% ── Tabla de contenidos ───────────────────────────────────
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Introducción}
+% ============================================================
+\textit{[Completar al final con el contexto general del problema y la justificación de por qué cada módulo requiere su paradigma específico.]}
+
+% ============================================================
+\section{Descripción del Dataset}
+% ============================================================
+\textit{[Completar con estadísticas del CSV cargado, manejo de valores nulos en \texttt{TotalCharges} y procedimiento de construcción del grafo.]}
+
+% ============================================================
+\section{Módulo A — Divide y Vencerás}
+% ============================================================
+
+\subsection{Planteamiento del Problema}
+
+Se dispone de un \textbf{dataset de 7\,043 registros de clientes de telecomunicaciones} extraído de Kaggle. Cada registro representa una solicitud de servicio con los siguientes campos:
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lll}
+\toprule
+\textbf{Campo en CSV} & \textbf{Interpretación} & \textbf{Tipo} \\
+\midrule
+\texttt{customerID} & Identificador de solicitud & string \\
+\texttt{tenure} & Prioridad de servicio (meses de antigüedad) & int \\
+\texttt{MonthlyCharges} & Valor mensual de la solicitud & double \\
+\texttt{TotalCharges} & Valor acumulado (peso en mochila) & double \\
+\texttt{Churn} & Estado: activa (No) o en riesgo (Yes) & string \\
+\bottomrule
+\end{tabularx}
+\caption{Campos extraídos del CSV para cada solicitud de servicio.}
+\end{table}
+
+\textbf{Objetivo:} Cargar, ordenar eficientemente y consultar sobre estos registros mediante algoritmos de Divide y Vencerás.
+
+\subsection{Parseo del CSV}
+
+\subsubsection*{Actividad}
+
+Leer el archivo CSV ignorando la cabecera, manejar valores nulos en \texttt{TotalCharges} para registros con \texttt{tenure = 0}, e importar los campos requeridos.
+
+\subsubsection*{Manejo de valores nulos}
+
+\begin{itemize}
+  \item El campo \texttt{TotalCharges} puede contener espacios en blanco cuando \texttt{tenure = 0}.
+  \item Estrategia: asignar $0.0$ a estos campos y contabilizarlos como registros nulos.
+  \item Se implementó limpieza de espacios al final de campos (ej. \texttt{\textbackslash r} en CRLF).
+\end{itemize}
+
+\subsubsection*{Estadísticas del CSV cargado}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lr}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Total de registros & 7\,043 \\
+Registros con \texttt{TotalCharges} nulo & 11 \\
+Registros con \texttt{Churn = No} (activos) & 5\,174 \\
+\texttt{tenure} máximo & 72 meses \\
+\texttt{tenure} mínimo & 0 meses \\
+\texttt{MonthlyCharges} promedio & 64.76 USD \\
+\bottomrule
+\end{tabularx}
+\caption{Estadísticas del dataset cargado desde el CSV.}
+\end{table}
+
+\subsection{Ordenamiento por MergeSort}
+
+\subsubsection*{Actividad}
+
+Implementar MergeSort estable para ordenar solicitudes por \texttt{tenure} en \textbf{orden descendente} (mayor antigüedad primero).
+
+\subsubsection*{Pseudocódigo}
+
+\begin{lstlisting}[language=C++, caption=MergeSort y Merge (orden descendente)]
+algoritmo MergeSort(arr, izquierda, derecha):
+    si izquierda >= derecha:
+        retornar
+    
+    medio := (izquierda + derecha) / 2
+    MergeSort(arr, izquierda, medio)
+    MergeSort(arr, medio+1, derecha)
+    Merge(arr, izquierda, medio, derecha)
+
+algoritmo Merge(arr, izquierda, medio, derecha):
+    crear L = arr[izquierda..medio]
+    crear R = arr[medio+1..derecha]
+    
+    i := 0, j := 0, k := izquierda
+    
+    mientras i < len(L) y j < len(R):
+        si L[i].tenure >= R[j].tenure:
+            arr[k] := L[i]
+            i := i + 1
+        si no:
+            arr[k] := R[j]
+            j := j + 1
+        k := k + 1
+    
+    copiar elementos restantes de L y R a arr
+\end{lstlisting}
+
+\subsubsection*{Análisis de Complejidad}
+
+\paragraph{Recurrencia.}
+\[
+T(n) = 2T(n/2) + \Theta(n)
+\]
+donde:
+\begin{itemize}
+  \item $2T(n/2)$: dos llamadas recursivas sobre mitades del arreglo.
+  \item $\Theta(n)$: tiempo de fusión de dos subarreglos ordenados.
+\end{itemize}
+
+\paragraph{Teorema Maestro (Caso 2).}
+\[
+T(n) = \Theta(n \log n)
+\]
+
+\paragraph{Justificación: MergeSort vs QuickSort.}
+
+\begin{itemize}
+  \item \textbf{Estabilidad:} MergeSort preserva el orden relativo de elementos iguales; QuickSort no.
+  \item \textbf{Peor caso:} MergeSort garantiza $O(n \log n)$ siempre; QuickSort puede alcanzar $O(n^2)$.
+  \item \textbf{Determinismo:} MergeSort no depende de pivotes; QuickSort sí.
+\end{itemize}
+
+\subsubsection*{Análisis empírico de tiempos}
+
+Se midió el tiempo de ejecución usando \texttt{std::chrono::high\_resolution\_clock}:
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{
+  >{\centering\arraybackslash}p{1.5cm}
+  >{\centering\arraybackslash}p{3cm}
+  >{\centering\arraybackslash}p{3.2cm}
+  >{\centering\arraybackslash}p{3.2cm}
+}
+\toprule
+\textbf{Tamaño (n)} & \textbf{MergeSort} & \textbf{Búsqueda binaria} & \textbf{Promedio de ejecuciones} \\
+\midrule
+1\,000 & 136 microsegundos & 0.0110 microsegundos & 1\,000\,000 ejecuciones \\
+3\,500 & 620 microsegundos & 0.0085 microsegundos & 1\,000\,000 ejecuciones \\
+7\,043 & 1\,209 microsegundos & 0.0075 microsegundos & 1\,000\,000 ejecuciones \\
+\bottomrule
+\end{tabularx}
+\caption{Tiempos empíricos de MergeSort para tres tamaños de entrada.}
+\end{table}
+
+\textbf{Conclusión:} Los tiempos de MergeSort crecen con el tamaño de entrada y siguen siendo consistentes con $\Theta(n \log n)$. La búsqueda binaria mantiene tiempos prácticamente constantes y submicrosegundo por consulta promedio.
+
+\subsection{Búsqueda Binaria Recursiva}
+
+\subsubsection*{Actividad}
+
+Implementar búsqueda binaria recursiva para localizar una solicitud con \texttt{tenure} $= k$ sobre el arreglo ya ordenado (orden descendente).
+
+\subsubsection*{Pseudocódigo}
+
+\begin{lstlisting}[language=C++, caption=Búsqueda Binaria Recursiva (orden descendente)]
+algoritmo BusquedaBinariaRecursiva(arr, izquierda, derecha, k):
+    si izquierda > derecha:
+        retornar -1
+    
+    medio := (izquierda + derecha) / 2
+    
+    si arr[medio].tenure == k:
+        retornar medio
+    
+    // Arreglo en orden DESCENDENTE
+    si arr[medio].tenure > k:
+        // k está a la derecha en orden descendente
+        retornar BusquedaBinariaRecursiva(arr, medio+1, derecha, k)
+    
+    si no:
+        // k está a la izquierda
+        retornar BusquedaBinariaRecursiva(arr, izquierda, medio-1, k)
+\end{lstlisting}
+
+\subsubsection*{Análisis de Complejidad}
+
+\paragraph{Recurrencia.}
+\[
+T(n) = T(n/2) + \Theta(1)
+\]
+
+\paragraph{Teorema Maestro (Caso 1).}
+\[
+T(n) = \Theta(\log n)
+\]
+
+\subsubsection*{Resultados de las 5 consultas fijas}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llll}
+\toprule
+\textbf{Consulta} & \textbf{Valor k} & \textbf{customerID} & \textbf{tenure} \\
+\midrule
+Q\_A01 & 72 & 6904-JLBGY & 72 \\
+Q\_A02 & 60 & 7426-WEIJX & 60 \\
+Q\_A03 & 45 & 7925-PNRGI & 45 \\
+Q\_A04 & 30 & 2684-EIWEO & 30 \\
+Q\_A05 & 12 & 7450-NWRTR & 12 \\
+\bottomrule
+\end{tabularx}
+\caption{Resultados de las 5 consultas binarias fijas.}
+\end{table}
+
+\subsubsection*{Primeros 10 registros ordenados}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{0.7\textwidth}{lr}
+\toprule
+\textbf{customerID} & \textbf{tenure} \\
+\midrule
+5248-YGIJN & 72 \\
+6234-RAAPL & 72 \\
+5954-BDFSG & 72 \\
+0526-SXDJP & 72 \\
+9848-JQJTX & 72 \\
+6728-DKUCO & 72 \\
+2848-YXSMW & 72 \\
+6734-PSBAW & 72 \\
+3146-MSEGF & 72 \\
+5997-OPVFA & 72 \\
+\bottomrule
+\end{tabularx}
+\caption{Primeros 10 registros del arreglo ordenado por tenure descendente.}
+\end{table}
+
+\textbf{Verificación:} Todas las consultas retornan una solicitud con \texttt{tenure} $= k$ válida y coinciden exactamente con el valor consultado.
+
+\subsection{Integración en el Pipeline}
+
+El Módulo A produce:
+\begin{enumerate}
+  \item \textbf{Arreglo ordenado por tenure descendente} → alimenta Módulo C.
+  \item \textbf{Archivo} \texttt{results/solicitudes\_ordenadas.csv} → registro permanente del ordenamiento.
+  \item \textbf{Archivo} \texttt{results/busquedas\_A.txt} → resultados de las 5 consultas.
+\end{enumerate}
+
+El pipeline se ejecuta en una sola llamada:
+\begin{lstlisting}[language=bash]
+g++ -std=c++17 -O2 -o ada_pf src/*.cpp
+./ada_pf
+\end{lstlisting}
+
+\subsection{Conclusiones del Módulo A}
+
+\begin{itemize}
+  \item \textbf{MergeSort funciona correctamente} y es estable, ordenando 7\,043 registros en 1\,209 microsegundos.
+  \item \textbf{Búsqueda binaria recursiva es eficiente} en $O(\log n)$ sobre datos ordenados y con tiempos promedio de 0.0075 microsegundos.
+  \item \textbf{Las 5 consultas fijas} coinciden con los valores exactos de tenure sobre el arreglo ordenado.
+  \item \textbf{Tiempos empíricos validan el análisis teórico} de complejidad $\Theta(n \log n)$.
+  \item \textbf{Divide y Vencerás demuestra su eficacia} para el procesamiento masivo de datos reales.
+\end{itemize}
+% ============================================================
+\section{Módulo B — Algoritmo Codicioso (Kruskal)}
+% ============================================================
+\textit{[Pseudocódigo de Kruskal con Union-Find; demostración del Lema del ciclo; lista de aristas del MST y peso total; verificación manual en subgrafo de 5 nodos.]}
+
+% ============================================================
+\section{Módulo C — Programación Dinámica (Mochila 0-1)}
+% ============================================================
+
+\subsection{Planteamiento}
+
+Se seleccionan las \textbf{50 solicitudes activas} (\texttt{Churn = No}) de mayor prioridad (\texttt{tenure}), extraídas de la salida ordenada del Módulo A. Cada solicitud $i$ se modela como un ítem de la mochila:
+
+\begin{itemize}
+  \item \textbf{Peso} $w_i = \texttt{round(TotalCharges)}$: ancho de banda requerido (entero).
+  \item \textbf{Valor} $v_i = \texttt{round(MonthlyCharges} \times 10)$: ingreso mensual en centavos.
+\end{itemize}
+
+El objetivo es encontrar el subconjunto $S$ que maximice $\sum_{i \in S} v_i$ sin superar la capacidad $W$, con variables de decisión binarias $x_i \in \{0, 1\}$. 
+
+\item \textbf{Justificacion de escenarios.} En la entrega se especifica $W=500$; no obstante, los pesos encontrados en el top 50 de solicitudes activas por tenure son todos mayores a 500 (en unidades de TotalCharges redondeado). Al aplicar PD con $W=500$, la mochila resulta vacia porque ningun item cabe, y el valor optimo es trivialmente 0. Para observar el comportamiento real de ambos paradigmas (PD vs. codicioso), se decidio evaluar adicionalmente $W=5000$, una capacidad que permite seleccionar items significativos y revelar las diferencias en las estrategias de decision.
+
+\subsection{Recurrencia y tabulación}
+
+Se define $dp[i][w]$ como el valor máximo obtenible usando los primeros $i$ ítems con capacidad $w$:
+
+\[
+dp[i][w] =
+\begin{cases}
+  0, & \text{si } i = 0 \text{ o } w = 0 \\[3pt]
+  dp[i-1][w], & \text{si } w_i > w \\[3pt]
+  \max\!\bigl\{dp[i-1][w],\; dp[i-1][w - w_i] + v_i\bigr\}, & \text{si } w_i \leq w
+\end{cases}
+\]
+
+La subestructura óptima garantiza que la solución global se construye correctamente a partir de subproblemas independientes.
+
+
+\textbf{Pseudocódigo — tabulación.}
+\begin{lstlisting}
+for i = 1 to n:
+    wi = items[i-1].peso;  vi = items[i-1].valor
+    for w = 0 to W:
+        if wi > w:
+            dp[i][w] = dp[i-1][w]
+        else:
+            dp[i][w] = max(dp[i-1][w], dp[i-1][w - wi] + vi)
+\end{lstlisting}
+
+\subsection{Reconstrucción (backtracking)}
+
+Para recuperar el conjunto exacto de ítems seleccionados se recorre la tabla desde $(n, W)$ hacia $(1, 0)$:
+
+\begin{lstlisting}
+w = W
+for i = n downto 1:
+    if items[i-1].peso <= w  and  dp[i][w] != dp[i-1][w]:
+        seleccionar items[i-1]
+        w = w - items[i-1].peso
+\end{lstlisting}
+
+Si $dp[i][w] \neq dp[i-1][w]$, el ítem $i$ fue incluido en la solución óptima; de lo contrario, fue excluido.
+
+\subsection{Resultados obtenidos}
+
+\subsubsection*{Escenario $W = 500$}
+
+\begin{itemize}
+  \item Valor óptimo: \textbf{0} centavos. Solicitudes seleccionadas: \textbf{ninguna}.
+\end{itemize}
+
+Este resultado es correcto: todos los pesos $w_i = \texttt{round(TotalCharges)}$ de las 50 solicitudes activas de mayor prioridad son estrictamente superiores a 500, por lo que ningún ítem cabe en la mochila. La escala real de \texttt{TotalCharges} para clientes con alta antigüedad supera ampliamente las 500 unidades.
+
+\subsubsection*{Escenario $W = 5\,000$}
+
+\begin{itemize}
+  \item Valor óptimo total: \textbf{707} centavos.
+  \item Solicitudes seleccionadas: \texttt{9286-BHDQG} y \texttt{4312-KFRXN}.
+  \item Capacidad utilizada: \textbf{4\,851} / 5\,000 unidades.
+\end{itemize}
+
+\subsection{Fallo del enfoque codicioso}
+
+La heurística codiciosa por ratio $v_i/w_i$ selecciona ítems en orden decreciente de rentabilidad hasta agotar la capacidad. Para demostrar que esta estrategia no garantiza optimalidad, se construyó un contraejemplo explícito con exactamente 3 solicitudes del conjunto anterior:
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{
+  >{\raggedright\arraybackslash}p{4cm}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{2cm}
+  >{\centering\arraybackslash}p{1.8cm}
+}
+\toprule
+\textbf{Enfoque} & \textbf{Solicitudes seleccionadas} & \textbf{Valor total} & \textbf{¿Óptimo?} \\
+\midrule
+Codicioso (ratio $v/w$) & \texttt{4312-KFRXN}, \texttt{6734-PSBAW}, \texttt{7606-BPHHN} & 688 & No \\
+PD (Mochila 0-1) & \texttt{9286-BHDQG}, \texttt{4312-KFRXN} & \textbf{707} & Sí \\
+\bottomrule
+\end{tabularx}
+\caption{Contraejemplo: heurística codiciosa \textit{vs.} solución óptima por PD ($W = 5\,000$).}
+\end{table}
+
+El codicioso selecciona 3 ítems con peso total 4\,904 y valor 688 siguiendo el criterio local. La PD descarta uno de ellos e incluye \texttt{9286-BHDQG}, logrando un valor de 707 con solo 2 ítems. Esto evidencia que el criterio local óptimo (mayor ratio) puede bloquear combinaciones globalmente superiores cuando los pesos son heterogéneos.
+
+\subsection{Complejidad y pseudopolinomialidad}
+
+\paragraph{Tiempo.} La tabulación recorre $(n+1) \times (W+1)$ celdas, cada una en $O(1)$:
+\[
+  T(n, W) = \Theta(n \cdot W).
+\]
+El backtracking aporta $O(n)$ adicional, dominado por el término anterior.
+
+\paragraph{Espacio.} La tabla completa requiere $\Theta(n \cdot W)$ de memoria. Si solo se necesita el valor óptimo sin reconstrucción, se puede reducir a $\Theta(W)$ conservando únicamente dos filas consecutivas.
+
+\paragraph{Pseudopolinomialidad.} El costo $\Theta(n \cdot W)$ es polinomial en el valor numérico de $W$, pero $W$ se codifica en $\lceil \log_2 W \rceil$ bits; por tanto, el algoritmo es exponencial en el tamaño de la entrada en bits. Esto al algoritmo como \textbf{pseudopolinomial}. En este proyecto, el redondeo de pesos y el factor $\times 10$ en valores son necesarios para trabajar con índices enteros, pero incrementan $W$ y, con ello, el costo computacional.
+
+\subsection{Discusión}
+
+\begin{itemize}
+  \item \textbf{Escenario $W = 500$.} El valor óptimo $0$ no es un error de implementación, sino consecuencia directa de la escala del dataset: los clientes de mayor antigüedad acumulan cargos totales muy superiores a 500.
+
+  \item \textbf{Escenario $W = 5\,000$.} La PD supera al codicioso en 19 centavos, confirmando que la exploración global del espacio de combinaciones es necesaria cuando los pesos no son proporcionales a los valores.
+
+  \item \textbf{Garantía de optimalidad.} A diferencia del enfoque codicioso, la PD garantiza encontrar la solución exacta, a costa de un costo que crece linealmente con $W$.
+\end{itemize}
+
+% ============================================================
+\section{Integración del Pipeline}
+% ============================================================
+\textit{[Diagrama de flujo del programa completo; descripción de cómo la salida del Módulo A alimenta al Módulo C.]}
+
+% ============================================================
+\section{Conclusiones}
+% ============================================================
+\textit{[Comparación de los tres paradigmas en términos de garantías de optimalidad y complejidad; reflexión sobre el comportamiento en datos reales.]}
+
+% ============================================================
+\section{Herramientas Utilizadas}
+% ============================================================
+\textit{[Citación explícita de cualquier herramienta de IA generativa usada, conforme a las políticas del curso.]}
+
+% ============================================================
+\section{Referencias}
+% ============================================================
+
+\begin{enumerate}[label={[\arabic*]}]
+  \item Blastchar. \textit{Telco Customer Churn}. Kaggle, 2018.
+        \url{https://www.kaggle.com/datasets/blastchar/telco-customer-churn}
+  \item Cormen, T.\,H., Leiserson, C.\,E., Rivest, R.\,L., \& Stein, C. (2022).
+        \textit{Introduction to Algorithms} (4.ª ed.). MIT Press.
+  \item Material del curso de Análisis y Diseño de Algoritmos — Universidad EAFIT, 2026-1.
+\end{enumerate}
+
+% ============================================================
+\section{Roles del Equipo}
+% ============================================================
+\textit{[Contribución específica de cada integrante por módulo.]}
+
+\end{document}
