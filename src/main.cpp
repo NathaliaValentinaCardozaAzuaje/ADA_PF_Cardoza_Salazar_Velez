@@ -8,6 +8,8 @@
 #include "mergesort.hpp"
 #include "parser.hpp"
 #include "solicitud.hpp"
+#include "graph.hpp"
+#include "kruskal.hpp"
 
 using namespace std;
 
@@ -16,9 +18,9 @@ void guardarCSVOrdenado(const vector<Solicitud> &solicitudes, const string &nomb
 void guardarBusquedas(const vector<string> &resultados, const string &nombreArchivo);
 
 int main() {
+  
   int registrosNulos = 0;
-  vector<Solicitud> solicitudes =
-      cargarCSV("data/WA_Fn-UseC_-Telco-Customer-Churn.csv", registrosNulos);
+  vector<Solicitud> solicitudes = cargarCSV("data/WA_Fn-UseC_-Telco-Customer-Churn.csv", registrosNulos);
 
   if (solicitudes.empty()) {
     cerr << "No se cargaron datos.\n";
@@ -27,6 +29,20 @@ int main() {
 
   cout << "Registros cargados: " << solicitudes.size() << endl;
   cout << "Registros nulos: " << registrosNulos << endl;
+
+  Grafo grafo = construirGrafo(solicitudes);
+
+  cout << "\nMODULO B\n";
+  cout << "Nodos: " << grafo.numNodos << endl;
+  cout << "Aristas: " << grafo.aristas.size() << endl;
+
+  cout << "\nPrimeras 5 aristas:\n";
+
+  for (int i = 0; i < 5; i++) {
+    cout << grafo.aristas[i].origen << " - "
+        << grafo.aristas[i].destino << " : "
+        << grafo.aristas[i].peso << endl;
+  }
 
   mergeSort(solicitudes, 0, solicitudes.size() - 1);
 

@@ -37,6 +37,7 @@ Grafo construirGrafo(const vector<Solicitud>& solicitudes)
         }
     }
 
-    
+    return grafo;
+
 }
 
