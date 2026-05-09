@@ -1,50 +1,106 @@
-# Práctica Final de Análisis y Diseño de Algoritmos
+# Practica Final Integradora - Analisis y Diseno de Algoritmos
+
+Repositorio del proyecto **ADA_PF_Cardoza_Salazar_Velez**.
+
+El proyecto integra 3 modulos sobre el dataset de Telco Customer Churn:
+
+- **Modulo A (Divide y Venceras):** parseo CSV, MergeSort por `tenure` descendente y busqueda binaria recursiva.
+- **Modulo B (Codicioso):** construccion de grafo determinista y MST con Kruskal + Union-Find.
+- **Modulo C (Programacion Dinamica):** Mochila 0-1 con backtracking y contraejemplo del enfoque codicioso.
 
 ## Requisitos
 
-- Compilador C++ compatible con C++17, por ejemplo `g++`.
-- Sistema operativo macOS, Linux o Windows con entorno de compilación equivalente.
+- Compilador C++ con soporte C++17 (`g++` recomendado).
+- Dataset en la ruta:
+  - `data/WA_Fn-UseC_-Telco-Customer-Churn.csv`
 
-## Compilación
+## Estructura esperada
 
-Desde la raíz del proyecto, compila todos los archivos fuente con uno de los comandos siguientes (elige el que se ajuste a tu entorno):
+```text
+ADA_PF_Cardoza_Salazar_Velez/
+|-- data/
+|   `-- WA_Fn-UseC_-Telco-Customer-Churn.csv
+|-- src/
+|   |-- main.cpp
+|   |-- parser.cpp / parser.hpp
+|   |-- mergesort.cpp / mergesort.hpp
+|   |-- binary_search.cpp / binary_search.hpp
+|   |-- graph.cpp / graph.hpp
+|   |-- kruskal.cpp / kruskal.hpp
+|   `-- knapsack.cpp / knapsack.hpp
+|-- results/
+|-- report/
+`-- README.md
+```
 
-- Compilación rápida con `g++` (Unix/macOS/WSL/MinGW):
+## Compilacion
+
+### Linux / macOS / WSL / Git Bash
+
+```bash
+g++ -std=c++17 -O2 -o ada_pf src/main.cpp src/*.cpp
+```
+
+### Windows PowerShell (MinGW)
+
+```powershell
+g++ -std=c++17 -O2 -o ada_pf.exe src/main.cpp src/*.cpp
+```
+
+## Ejecucion
+
+### Linux / macOS / WSL / Git Bash
+
+```bash
+./ada_pf data/WA_Fn-UseC_-Telco-Customer-Churn.csv
+```
+
+### Compilar y ejecutar de una vez (Linux / macOS / WSL / Git Bash/Windows PowerShell)
 
 ```bash
 g++ -std=c++17 -O2 -o ada_pf src/*.cpp
+./ada_pf data/WA_Fn-UseC_-Telco-Customer-Churn.csv
 ```
 
-- Usando `clang++` (macOS, similar a `g++`):
-
-```bash
-clang++ -std=c++17 -O2 -o ada_pf src/*.cpp
-```
-
-Notas útiles:
-
-- Si recibes errores de "símbolo redefinido" o "multiple definition", evita incluir `src/main.cpp` dos veces en la lista de fuentes; usar `src/*.cpp` es suficiente.
-- Para compilar en Windows con MinGW desde PowerShell o CMD, reemplaza `g++` por la ruta a `g++.exe` si no está en el PATH, y el ejecutable será `ada_pf.exe`.
-- Para compilación en modo depuración (simula con menos optimizaciones y símbolos de depuración):
-
-```bash
-g++ -std=c++17 -g -O0 -o ada_pf_debug src/*.cpp
-```
-
-## Ejecución
-
-Después de compilar, ejecuta el binario desde la raíz del proyecto:
-
-```bash
-./ada_pf
-```
-
-En Windows (PowerShell/CMD) ejecuta:
+### Windows PowerShell
 
 ```powershell
-.\ada_pf.exe
+.\ada_pf.exe data\WA_Fn-UseC_-Telco-Customer-Churn.csv
 ```
 
-## Resultado esperado
+> El programa tambien funciona sin argumento y usa por defecto:
+> `data/WA_Fn-UseC_-Telco-Customer-Churn.csv`
 
-Al finalizar la ejecución, la consola muestra la cantidad de registros cargados, la cantidad de nulos detectados, los primeros registros ordenados, las búsquedas realizadas y las mediciones de tiempo.
+## Salidas generadas (una sola ejecucion)
+
+Al correr el ejecutable se generan estos archivos en `results/`:
+
+- `solicitudes_ordenadas.csv` (Modulo A)
+- `busquedas_A.txt` (Modulo A)
+- `mst_red.txt` (Modulo B)
+- `asignacion_bw_500.txt` (Modulo C, escenario W=500)
+- `asignacion_bw_5000.txt` (Modulo C, escenario W=5000)
+
+## Nota importante de compilacion
+
+El proyecto esta preparado para compilar exactamente con el comando solicitado en la guia:
+
+```bash
+g++ -std=c++17 -O2 -o ada_pf src/main.cpp src/*.cpp
+```
+
+## Ejecucion esperada
+
+En consola veras, en orden:
+
+1. Modulo A: ordenamiento, busquedas y medicion de tiempos.
+2. Modulo B: datos del grafo y MST por Kruskal.
+3. Modulo C: resultados de Mochila para W=500 y W=5000.
+
+Al final aparece:
+
+- `Archivos generados correctamente.`
+
+## Informe
+
+El informe en PDF se encuentra en `report/`.
